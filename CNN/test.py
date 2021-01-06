@@ -3,10 +3,10 @@ from workspace.Preprocess import process_data
 import numpy as np
 import glob
 
-# model = load_model('log_sav/optimal/cnn_2.h5') # CNN method version 1.0
-model = load_model('log_sav/optimal_30_20/cnn_0.h5')
-X_test = np.load("../data/test.npy", allow_pickle=True)
-submission = open("../submission.csv", "w")
+# model = load_model('workspace/CNN/log_sav/optimal/cnn_2.h5') # CNN method version 1.0
+model = load_model('workspace/CNN/log_sav/optimal_30_20/cnn_0.h5')
+X_test = np.load("workspace/data/test.npy", allow_pickle=True)
+submission = open("workspace/submission.csv", "w")
 submission.write("id,categories\r\n")
 for i, data_path in enumerate(glob.glob(process_data.TEST_PATH + "/*")):
     sample_i = data_path.split("/")[-1].split(".")[0]

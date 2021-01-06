@@ -20,11 +20,11 @@ means = []
 for i, (_, value) in enumerate(accuracies):
 	for k, v in enumerate(value):
 		t = plt.scatter(i, v, color=color[k])
-	types.append(t)
+		if i == 0: types.append(t)
 	means.append(np.mean(value))
 plt.plot(np.arange(len(accuracies)), means, marker='s', color='firebrick')
 plt.xticks(np.arange(len(accuracies)), [k[0] for k in accuracies])
-plt.xlabel("Fold ID")
+plt.xlabel("CNN Structures")
 plt.ylabel("Evaluation Accuracy")
 plt.title("Evaluation Accuracy of Different CNN Structure With Cross-Validation")
 plt.legend(types, [f"Fold_{j}" for j in range(5)], loc="lower left")

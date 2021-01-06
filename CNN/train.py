@@ -8,10 +8,10 @@ import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-model_file = 'model/cnn_{}.h5'
+model_file = 'workspace/CNN/model/cnn_{}.h5'
 
 dataset = np.array([
-    [np.load(f"../data/train_{i}.npy"), np.load(f"../data/label_{i}.npy")]
+    [np.load(f"workspace/data/train_{i}.npy"), np.load(f"workspace/data/label_{i}.npy")]
     for i in range(process_data.FOLD)
 ], dtype=object)
 
@@ -59,7 +59,7 @@ for fold_index in range(process_data.FOLD):
     
     history = model.fit(X_train, y_train, epochs=200, batch_size=16, verbose=1, validation_data=(X_valid, y_valid), callbacks=[
         keras.callbacks.TensorBoard(
-            log_dir=f'./logs/fold_{fold_index}/', histogram_freq=0, write_graph=True, write_images=False,
+            log_dir=f'workspace/CNN/logs/fold_{fold_index}/', histogram_freq=0, write_graph=True, write_images=False,
             embeddings_freq=0, embeddings_layer_names=None, embeddings_metadata=None
         )
     ])

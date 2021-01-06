@@ -1,6 +1,5 @@
-/__pycache__/
-/CNN/__pycache__/
-/Preprocess/__pycache__/
+/.idea/
+*/__pycache__
 /CNN/log_sav/
 /ECGTestData/*
 /ECGTrainData/*

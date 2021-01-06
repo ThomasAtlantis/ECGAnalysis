@@ -4,10 +4,10 @@ from functools import reduce
 from biosppy.signals import ecg
 import scipy.io as io
 import numpy as np
-import glob, copy, pywt
+import glob, copy, pywt, argparse
 
-TRAIN_PATH = "../ECGTrainData/Train/"
-TEST_PATH = "../ECGTestData/ECGTestData/"
+TRAIN_PATH = "workspace/ECGTrainData/Train/"
+TEST_PATH = "workspace/ECGTestData/ECGTestData/"
 DAO_TOTAL = 12
 FOLD = 5
 CATE_MAP = {
@@ -61,10 +61,12 @@ def segmentation(data, label=None):
         )["templates"] for dao_id in [1, 3, 6, 9]])
         inputs.append(beats)
         if label: labels.append(np.full(beats.shape[0], label[sap_id]))
+        # if label: labels.append(label[sap_id])
     if not label:
         return np.array(inputs, dtype=object)
     else:
         return np.vstack(inputs), np.hstack(labels)
+        # return np.array(inputs), np.array(labels)
 
 
 def denoise(data):
@@ -83,17 +85,40 @@ def display(data, sample_id, dao_id):
     plt.show()
 
 
+def boolean_flag(parser, name, default=False, help=None):
+    dest = name.replace('-', '_')
+    parser.add_argument("--" + name, action="store_true", default=default, dest=dest, help=help)
+    parser.add_argument("--no-" + name, action="store_false", dest=dest)
+
+
 if __name__ == '__main__':
-    train, test = concatenate()
-    xs, ys = segmentation(train["inputs"], train["labels"])
-    random_index = np.arange(xs.shape[0])
-    np.random.shuffle(random_index)
-    each_fold = xs.shape[0] // FOLD
-    for i in range(FOLD - 1):
-        index = random_index[i * each_fold: (i + 1) * each_fold]
-        np.save(f'../data/train_{i}.npy', xs[index])
-        np.save(f'../data/label_{i}.npy', ys[index])
-    index = random_index[(FOLD - 1) * each_fold:]
-    np.save(f'../data/train_{FOLD - 1}.npy', xs[index])
-    np.save(f'../data/label_{FOLD - 1}.npy', ys[index])
-    np.save('../data/test.npy', segmentation(test))
+    parser = argparse.ArgumentParser()
+    boolean_flag(parser, 'ica', default=False)
+    dict_args = vars(parser.parse_args())
+    if dict_args['ica']:
+        train, test = concatenate()
+        xs, ys = segmentation(train["inputs"], train["labels"])
+        random_index = np.arange(xs.shape[0])
+        np.random.shuffle(random_index)
+        each_fold = xs.shape[0] // FOLD
+        for i in range(FOLD - 1):
+            index = random_index[i * each_fold: (i + 1) * each_fold]
+            np.save(f'workspace/data/ica_train_{i}.npy', xs[index])
+            np.save(f'workspace/data/ica_label_{i}.npy', ys[index])
+        index = random_index[(FOLD - 1) * each_fold:]
+        np.save(f'workspace/data/ica_train_{FOLD - 1}.npy', xs[index])
+        np.save(f'workspace/data/ica_label_{FOLD - 1}.npy', ys[index])
+    else:
+        train, test = concatenate()
+        xs, ys = segmentation(train["inputs"], train["labels"])
+        random_index = np.arange(xs.shape[0])
+        np.random.shuffle(random_index)
+        each_fold = xs.shape[0] // FOLD
+        for i in range(FOLD - 1):
+            index = random_index[i * each_fold: (i + 1) * each_fold]
+            np.save(f'workspace/data/train_{i}.npy', xs[index])
+            np.save(f'workspace/data/label_{i}.npy', ys[index])
+        index = random_index[(FOLD - 1) * each_fold:]
+        np.save(f'workspace/data/train_{FOLD - 1}.npy', xs[index])
+        np.save(f'workspace/data/label_{FOLD - 1}.npy', ys[index])
+        np.save('workspace/data/test.npy', segmentation(test))
